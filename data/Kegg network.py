@@ -58,6 +58,7 @@ rho10=calculate_spearman_corr(ovarian_expression10)
 # In[5]:
 
 
+# Build a dataframe using one of the ovarian dataset GSE14764
 rho2_matrix=pd.DataFrame(data=rho2,index=list(ovarian_expression2.index),columns=list(ovarian_expression2.index))
 
 
@@ -66,12 +67,6 @@ rho2_matrix=pd.DataFrame(data=rho2,index=list(ovarian_expression2.index),columns
 
 # Find overlapping gene between KEGG and the ovarian data
 overlap_genes=list(set(ova_genes).intersection(set(Kegg_gene)))
-
-
-# In[67]:
-
-
-print(len(overlap_genes))
 
 
 # In[7]:
@@ -84,14 +79,6 @@ for i in range(0,len(edgelist)):
     index1=edgelist.iloc[i,0]
     index2=edgelist.iloc[i,1]
     G.add_edge(nodes.iloc[index1,0],nodes.iloc[index2,0])
-print(len(list(G.nodes())))
-print(nx.diameter(G))
-
-
-# In[54]:
-
-
-print(list(G.nodes()))
 
 
 # In[8]:
@@ -111,19 +98,15 @@ for i in range(0,len(list(G.nodes()))):
 # In[9]:
 
 
+# Build the distance matrix into a dataframe
 distance_matrix=pd.DataFrame(data=distance, index=list(G.nodes()),columns=list(G.nodes()))
 
 
 # In[10]:
 
 
+# Calculate diameter of Kegg network
 diameter=nx.diameter(G)
-
-
-# In[23]:
-
-
-print(len(list(overlap_genes)))
 
 
 # In[11]:
@@ -151,6 +134,7 @@ def SIobserve(distance_matrix,cor_matrix,diameter,genes_assayed_network,gene_of_
 # In[12]:
 
 
+# Generate resamples and calculate the SI score for a given gene of interest
 def SIpermutation(genes_assayed_network,distance_matrix,cor_matrix,diameter,resample,gene_of_interest):
     SIpermute=np.zeros((resample,diameter))
     neighbors=[]
@@ -174,6 +158,9 @@ def SIpermutation(genes_assayed_network,distance_matrix,cor_matrix,diameter,resa
 # In[13]:
 
 
+# Call SIobserve and SIpermutation
+# Input: distance matrix, correlation matrix, overlapping genes, gene of interest, number of resample needed
+# Output: SI matrix (SI score at each distance) and p_SI (p-value of gene's SI score based on null distribution)
 def SI(distance_matrix,cor_matrix,dimeter,genes_assayed_network,gene_of_interest,resample):
     SI_matrix=SIobserve(distance_matrix,cor_matrix,diameter,genes_assayed_network,gene_of_interest)
     SIpermute=SIpermutation(overlap_genes,distance_matrix,rho2_matrix,diameter,resample,gene_of_interest)
@@ -185,35 +172,43 @@ def SI(distance_matrix,cor_matrix,dimeter,genes_assayed_network,gene_of_interest
     return(p_SI,SI_matrix)
 
 
-# In[ ]:
+# # Below are tests, corresponding to supplement 12859_2019_2829_MOESM1_ESM
+
+# In[14]:
 
 
 hsa2720_p_SI=SI(distance_matrix,rho2_matrix,diameter,overlap_genes,'hsa:2720',200)
 
 
-# In[173]:
+# In[17]:
+
+
+print(hsa2720_p_SI)
+
+
+# In[15]:
 
 
 hsa2562_p_SI=SI(distance_matrix,rho2_matrix,diameter,overlap_genes,'hsa:2562',200)
 
 
-# In[176]:
+# In[18]:
 
 
-hsa2562_p_SI_2=SI(distance_matrix,rho2_matrix,diameter,overlap_genes,'hsa:2562',100)
+print(hsa2562_p_SI)
 
 
-# In[ ]:
+# In[16]:
 
 
 hsa2316_p_SI,hsa2316_Si_matrix=SI(distance_matrix,rho2_matrix,diameter,overlap_genes,'hsa:2316',200)
 
 
-# In[177]:
+# In[20]:
 
 
-print(hsa2562_p_SI)
-print(hsa2562_p_SI_2)
+print(hsa2316_p_SI)
+print(hsa2316_Si_matrix)
 
 
 # In[172]:
