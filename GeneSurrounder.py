@@ -139,9 +139,8 @@ verboseprint("Values: " + str(p_SI))
 # Compute the final p values.
 print("Final p values:")
 for i in range(len(expr)):
-    combined_vals = [combine_pvalues([p_decay[i][j], p_SI[i][j]]) for j in range(diameter)]
-    verboseprint(combined_vals)
-    
+    combined_vals = [combine_pvalues([p_decay[i][j], p_SI[i][j]])[1] for j in range(diameter)]
+
     # Display output.
     item = i if args.items == None else args.items[i]
     print("p value for data set " + str(item) + " : " + str(min(combined_vals)))

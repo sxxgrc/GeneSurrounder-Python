@@ -80,7 +80,7 @@ def decayDE(expr, grade, dist, diameter):
 
         trueval = computeD(g_vals, dist_filter[1])
         distribution = computeDistD(g_vals, dist_filter[1])
-        val = float(len([x <= trueval for x in distribution])) / len(distribution)
+        val = float(len([x for x in distribution if x <= trueval])) / len(distribution)
         pvals[thresh] = val if val > 0 else (1.0 / ((10 ** 3) + 1))
 
     return pvals
