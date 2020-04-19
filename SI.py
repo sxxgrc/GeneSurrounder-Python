@@ -16,7 +16,7 @@ from scipy.stats import spearmanr
 Builds the SI component which determines if a gene is more strongly correlated with its
 neighbors.
 """
-def SIObserve(distance, correlation, diameter, overlap_genes, gene_of_interest):
+def SIObserve(distance, correlation, diameter, overlap_genes):
     SI = [0 for _ in range(diameter)]
     
     rho_sum = 0
@@ -67,9 +67,8 @@ def sphereOfInf(dist, expr, diameter, overlap_genes, resample, gene_of_interest)
     
     # Compute SI scores.
     correlation = [cor[gene][gene_of_interest] for gene in overlap_genes]
-    SI_matrix = SIObserve(dist, correlation, diameter, overlap_genes, gene_of_interest)
-    SI_permute = SIPermute(overlap_genes, dist, correlation, diameter, resample, 
-                           gene_of_interest)
+    SI_matrix = SIObserve(dist, correlation, diameter, overlap_genes)
+    SI_permute = SIPermute(overlap_genes, dist, correlation, diameter, resample, gene_of_interest)
     
     p_SI = [0 for _ in range(len(SI_matrix))]
     for i in range(len(SI_matrix)):

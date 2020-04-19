@@ -125,7 +125,7 @@ else:
 p_decay = [0 for _ in range(len(expr))]
 
 for i in range(len(expr)):
-    p_decay[i] = decayDE(expr[i], grade[i], 4, distances, args.gene)
+    p_decay[i] = decayDE(expr[i], grade[i], 4, distances)
 verboseprint("Finished computing Decay of Differential expression value!")
 verboseprint("Values: " + str(p_decay))
 
@@ -139,5 +139,8 @@ verboseprint("Values: " + str(p_SI))
 # Compute the final p values.
 print("Final p values:")
 for i in range(len(expr)):
+    val = min([combine_pvalues([p_decay[i][j], p_SI[i][j]]) for j in range(diameter)])
+    
+    # Display output.
     item = i if args.items == None else args.items[i]
-    print("p value for data set " + str(item) + " : " + str(combine_pvalues([p_decay[i], p_SI[i]])))
+    print("p value for data set " + str(item) + " : " + str(val))
