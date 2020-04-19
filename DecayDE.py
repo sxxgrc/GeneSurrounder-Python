@@ -70,6 +70,7 @@ Parameters:
     - diameter : Diameter of the network
 """
 def decayDE(expr, grade, dist, diameter):
+    # Computation of p value.    
     pvals = [0 for _ in range(diameter)]
     for thresh in range(diameter):
         dist_filter = list(zip(*[(val, dist[val]) for val in dist.keys() if 
@@ -79,6 +80,7 @@ def decayDE(expr, grade, dist, diameter):
 
         trueval = computeD(g_vals, dist_filter[1])
         distribution = computeDistD(g_vals, dist_filter[1])
-        pvals[thresh] = sum([x < trueval for x in distribution]) / len(distribution)
+        val = float(len([x <= trueval for x in distribution])) / len(distribution)
+        pvals[thresh] = val if val > 0 else (1.0 / ((10 ** 3) + 1))
 
     return pvals

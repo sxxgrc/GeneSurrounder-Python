@@ -126,21 +126,22 @@ p_decay = [0 for _ in range(len(expr))]
 
 for i in range(len(expr)):
     p_decay[i] = decayDE(expr[i], grade[i], distances, diameter)
-verboseprint("Finished computing Decay of Differential expression value!")
+verboseprint("Finished computing Decay of Differential expression values!")
 verboseprint("Values: " + str(p_decay))
 
 p_SI = [0 for _ in range(len(expr))]
 
 for i in range(len(expr)):
     p_SI[i] = sphereOfInf(distances, expr[i], diameter, overlap_genes, 200, args.gene)
-verboseprint("Finished computing Sphere of Influence value!")
+verboseprint("Finished computing Sphere of Influence values!")
 verboseprint("Values: " + str(p_SI))
 
 # Compute the final p values.
 print("Final p values:")
 for i in range(len(expr)):
-    val = min([combine_pvalues([p_decay[i][j], p_SI[i][j]]) for j in range(diameter)])
+    combined_vals = [combine_pvalues([p_decay[i][j], p_SI[i][j]]) for j in range(diameter)]
+    print(combined_vals)
     
     # Display output.
     item = i if args.items == None else args.items[i]
-    print("p value for data set " + str(item) + " : " + str(val))
+    print("p value for data set " + str(item) + " : " + str(min(combined_vals)))

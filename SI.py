@@ -19,7 +19,7 @@ neighbors.
 def SIObserve(distance, correlation, diameter, overlap_genes):
     SI = [0 for _ in range(diameter)]
     
-    rho_sum = 0
+    rho_sum = 0.0
     for i in range(diameter):
         index = [j for j in range(len(overlap_genes)) if distance[overlap_genes[j]] == i + 1]
         rho_sum += sum(abs(correlation[z]) for z in index)
@@ -34,7 +34,7 @@ def SIPermute(overlap_genes, distance, correlation, diameter, resample, gene_of_
     SI_permute = np.zeros((resample, diameter))
     neighbors = []
 
-    rho_sum = [0 for _ in range(resample)]
+    rho_sum = [0.0 for _ in range(resample)]
     for i in range(diameter):
         for k in range(resample):
             index = [j for j in range(len(overlap_genes)) if distance[overlap_genes[j]] == i + 1]
@@ -74,6 +74,9 @@ def sphereOfInf(dist, expr, diameter, overlap_genes, resample, gene_of_interest)
     for i in range(len(SI_matrix)):
         SI_permute_r = list(SI_permute[:, i])
         overlap = [j for j in range(len(SI_permute_r)) if SI_permute_r[j] >= SI_matrix[i]]
-        p_SI[i] = round(len(overlap) / len(SI_permute_r), 8)
+        p_SI[i] = (len(overlap) * 1.0) / (len(SI_permute_r) * 1.0)
+        
+        if p_SI[i] == 0:
+            p_SI[i] = 1.0 / (resample + 1)
     
     return p_SI
