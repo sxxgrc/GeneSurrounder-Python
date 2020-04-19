@@ -66,14 +66,14 @@ Main function for the Decay Differential Expression algorithm.
 Parameters:
     - expr : DataFrame for the expression values over the genes in the data
     - grade : DataFrame for the grade values over the experiments in the data
-    - thresh : Threshold value for the algorithm
     - dist : Distance matrix of all geodesic distances between assayed node pairs in G
-    - gene_of_interest : Gene to run the computation on
+    - diameter : Diameter of the network
 """
-def decayDE(expr, grade, dist):
-    pvals = {}
-    for thresh in range(max(dist.values())):
-        dist_filter = list(zip(*[(val, dist[val]) for val in dist.keys() if dist[val] < thresh]))
+def decayDE(expr, grade, dist, diameter):
+    pvals = [0 for _ in range(diameter)]
+    for thresh in range(diameter):
+        dist_filter = list(zip(*[(val, dist[val]) for val in dist.keys() if 
+                                 dist[val] < thresh + 1]))
         expr_radius = expr.loc[list(dist_filter[0])]
         g_vals = computeG(expr_radius, grade)
 

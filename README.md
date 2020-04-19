@@ -13,10 +13,12 @@ The optional command line arguments are as follows:
     -v : Verbose flag which enables printing of progress in the program.
     -netfile [path to network file] : Path to a network file to use for the program, defaults to the KEGGNetwork in the data folder.
     -items [space-separated integers] : The indices of experiments from the RData file to run the program on, defaults to all of them.
-    -l : Loads the distance matrix and expression/grade data from a previous run. Takes priority over -s.
-    -s : Stores the distance matrix and the expression/grade data into a file so they can be loaded in subsequent runs.
+    -l : Loads the expression/grade data from a previous run. Takes priority over -s.
+    -s : Stores the expression/grade data into a file so they can be loaded in subsequent runs.
+    -lg : Loads the distance matrix and diameter for the given gene from previous runs. Takes priority over -sg.
+    -sg : Stores the distance matrix and diameter for the given gene for future runs.
 
 Example of running the program for the CurOvGradeKEGGnets.RData file in the data folder, for gene hsa:2316, and experiments 2, 3, and 7, also
-with verbosity and saving the generated items (s can be switched to l to load instead):
+with verbosity and saving the generated items (s can be switched to l to load instead, same for sg with lg):
 
-`python3 GeneSurrounder.py data/CurOvGradeKEGGnets.RData hsa:2316 -items 2 3 7 -v -s`
+`python3 GeneSurrounder.py data/CurOvGradeKEGGnets.RData hsa:2316 -items 2 3 7 -v -s -sg`

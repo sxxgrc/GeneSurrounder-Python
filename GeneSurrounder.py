@@ -26,14 +26,14 @@ parser.add_argument("-netfile", nargs="?", default="data/KEGGNetwork.txt",
 parser.add_argument("-items", nargs="*", type=int, help="Use to define which items from " +
                     "geneRData to use in the analysis. Note that this implies that " +
                     "the data must be ordered as desired.")
-parser.add_argument("-l", action="store_true", help="Load network diameter and parsed " +
-                    " expression/grade data from previous use.")
-parser.add_argument("-s", action="store_true", help="Save network diameter and parsed " +
-                    "expression/grade data created for future uses.")
-parser.add_argument("-lg", action="store_true", help="Load distance matrix for current gene from " +
-                    "previous use.")
-parser.add_argument("-sg", action="store_true", help="Save distance matrix for current gene for " +
-                    "future use.")
+parser.add_argument("-l", action="store_true", help="Load parsed expression/grade data " +
+                    "from previous use.")
+parser.add_argument("-s", action="store_true", help="Save parsed expression/grade data " + 
+                    "created for future uses.")
+parser.add_argument("-lg", action="store_true", help="Load distance matrix and diameter " +
+                    "for current gene from previous use.")
+parser.add_argument("-sg", action="store_true", help="Save distance matrix and diameter " +
+                    "for current gene for future use.")
 args = parser.parse_args()
 
 # Little logger.
@@ -52,14 +52,14 @@ if (args.items != None):
     print(out)
 
 if args.l:
-    print("Loading network diameter and expression/grade data from previous use.")
+    print("Loading expression/grade data from previous use.")
 elif args.s:
-    print("Saving network diameter and expression/grade data for future uses.")
+    print("Saving expression/grade data for future uses.")
     
 if args.lg:
-    print("Loading distance matrix in network for current gene.")
+    print("Loading distance matrix and network diameter for current gene.")
 elif args.sg:
-    print("Saving distance matrix in network for current gene.")
+    print("Saving distance matrix and network diameter for current gene.")
 
 # Load in the network file.
 network = nx.read_edgelist(args.netfile)
@@ -110,14 +110,14 @@ else:
         verboseprint("Finished saving geodesic distance matrix over assayed genes.")
 
 # Get the diameter of the graph.
-if args.l:
+if args.lg:
     diameter = load_obj("diameter")
     verboseprint("Finished loading diameter " + str(diameter) + ".")
 else:
-    diameter = nx.diameter(network)
+    diameter = max(distances.values())
     verboseprint("Finished computing network diameter!")
     
-    if args.s:
+    if args.sg:
         save_obj(diameter, "diameter")
         verboseprint("Finished saving network diameter.")
 
@@ -125,7 +125,7 @@ else:
 p_decay = [0 for _ in range(len(expr))]
 
 for i in range(len(expr)):
-    p_decay[i] = decayDE(expr[i], grade[i], 4, distances)
+    p_decay[i] = decayDE(expr[i], grade[i], distances, diameter)
 verboseprint("Finished computing Decay of Differential expression value!")
 verboseprint("Values: " + str(p_decay))
 
