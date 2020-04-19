@@ -58,15 +58,15 @@ Parameters:
     - expr : Expression data for genes in experiments
     - diameter : The diameter of the network
     - overlap_genes : Overlapping genes between network and expression data
-    - resample : Number of resamples desired    
+    - resample : Number of resamples desired
+    - gene_of_interest : The specific gene to run this computation on
 """
-def sphereOfInf(dist, expr, diameter, overlap_genes, resample):
+def sphereOfInf(dist, expr, diameter, overlap_genes, resample, gene_of_interest):
     # Compute correlation data frame.
     cor_index = list(expr.index)
     cor = pd.DataFrame(data=spearmanr(expr, axis=1)[0], index=cor_index, columns=cor_index)
     
-    # Compute SI scores. TODO: How to integrate gene of interest so as to get overall values?
-    gene_of_interest = None
+    # Compute SI scores.
     distance = [dist[gene_of_interest][gene] for gene in overlap_genes]
     correlation = [cor[gene_of_interest][gene] for gene in overlap_genes]
     SI_matrix = SIObserve(distance, correlation, diameter, overlap_genes, gene_of_interest)
