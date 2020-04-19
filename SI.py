@@ -67,8 +67,8 @@ def sphereOfInf(dist, expr, diameter, overlap_genes, resample, gene_of_interest)
     cor = pd.DataFrame(data=spearmanr(expr, axis=1)[0], index=cor_index, columns=cor_index)
     
     # Compute SI scores.
-    distance = [dist[gene_of_interest][gene] for gene in overlap_genes]
-    correlation = [cor[gene_of_interest][gene] for gene in overlap_genes]
+    distance = [dist[gene] for gene in overlap_genes]
+    correlation = [cor[gene] for gene in overlap_genes]
     SI_matrix = SIObserve(distance, correlation, diameter, overlap_genes, gene_of_interest)
     SI_permute = SIPermute(overlap_genes, distance, correlation, diameter, resample, 
                            gene_of_interest)
