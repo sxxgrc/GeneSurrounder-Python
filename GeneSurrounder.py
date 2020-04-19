@@ -140,7 +140,7 @@ verboseprint("Values: " + str(p_SI))
 print("Final p values:")
 for i in range(len(expr)):
     combined_vals = [combine_pvalues([p_decay[i][j], p_SI[i][j]]) for j in range(diameter)]
-    print(combined_vals)
+    verboseprint(combined_vals)
     
     # Display output.
     item = i if args.items == None else args.items[i]
