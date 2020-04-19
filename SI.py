@@ -75,5 +75,7 @@ def sphereOfInf(dist, expr, diameter, overlap_genes, resample, gene_of_interest)
         SI_permute_r = list(SI_permute[:, i])
         overlap = [j for j in range(len(SI_permute_r)) if SI_permute_r[j] >= SI_matrix[i]]
         p_SI[i] = round(len(overlap) / len(SI_permute_r), 8)
+        if p_SI[i] == 0:
+            p_SI[i] = 1/(resample+1)
     
     return p_SI
