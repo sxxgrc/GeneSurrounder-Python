@@ -65,18 +65,6 @@ elif args.sg:
 network = nx.read_edgelist(args.netfile)
 verboseprint("Finished loading network!")
 
-# Calculate geodesic distances for the network.
-if args.lg:
-    distances = load_obj("distances")
-    verboseprint("Finished loading distances.")
-else:
-    distances = dict(nx.shortest_path_length(network, source=args.gene))
-    verboseprint("Finished computing geodesic distance matrix!")
-    
-    if args.sg:
-        save_obj(distances, "distances")
-        verboseprint("Finished saving geodesic distance matrix.")
-
 # Load in the gene expression data sets along with the phenotype grade values.
 if args.l:
     expr = load_obj("expr")
@@ -105,10 +93,26 @@ if args.gene not in overlap_genes:
 overlap_genes = list(overlap_genes)
 verboseprint("Finished computing overlapping genes between network and data.")
 
+# Calculate geodesic distances for the network.
+if args.lg:
+    distances = load_obj("distances")
+    verboseprint("Finished loading distances.")
+else:
+    distances = {}
+    
+    for node in overlap_genes:
+        distances[node] = nx.shortest_path_length(network, source=args.gene, target=node)
+        
+    verboseprint("Finished computing geodesic distance matrix over assayed genes!")
+
+    if args.sg:
+        save_obj(distances, "distances")
+        verboseprint("Finished saving geodesic distance matrix over assayed genes.")
+
 # Get the diameter of the graph.
 if args.l:
     diameter = load_obj("diameter")
-    verboseprint("Finished loading diameter.")
+    verboseprint("Finished loading diameter " + str(diameter) + ".")
 else:
     diameter = nx.diameter(network)
     verboseprint("Finished computing network diameter!")
@@ -121,14 +125,16 @@ else:
 p_decay = [0 for _ in range(len(expr))]
 
 for i in range(len(expr)):
-    p_decay[i] = decayDE(expr[i], grade[i], 4, distances)
+    p_decay[i] = decayDE(expr[i], grade[i], 4, distances, args.gene)
 verboseprint("Finished computing Decay of Differential expression value!")
+verboseprint("Values: " + str(p_decay))
 
 p_SI = [0 for _ in range(len(expr))]
 
 for i in range(len(expr)):
     p_SI[i] = sphereOfInf(distances, expr[i], diameter, overlap_genes, 200, args.gene)
 verboseprint("Finished computing Sphere of Influence value!")
+verboseprint("Values: " + str(p_SI))
 
 # Compute the final p values.
 print("Final p values:")

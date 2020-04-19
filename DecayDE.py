@@ -28,55 +28,34 @@ def computeG(expr, grade):
 
 """
 Computes the decay of differential expression value for the graph.
-TODO: Shouldn't this use the putative genes?
 """
-def computeD(thresh, expr, grade, dist):
-    g_vals = computeG(expr, grade)
-    discordance = pd.Series()
-    genes = dist.keys()
-    
-    for gene in genes:
-        nearby = [(val, dist[gene][val]) for val in genes if dist[gene][val] < thresh]
-        d = []
-        g = []
-        
-        for node in nearby:
-            if node[0] in g_vals.index:
-                d.append(node[1])
-                g.append(g_vals[node[0]])
-
-        tau = kendall_corr(g, d)[0]
-        discordance[gene] = tau
-    
-    return discordance
+def computeD(g_vals, dists):
+    return kendall_corr(g_vals, dists)
 
 """
 Computes the distribution of DDE across the given dataset and network.
 """
-def computeDistD(thresh, expr, grade, dist):
+def computeDistD(g_vals, dists):
     # Amount of permutations to do.
     perm_count = 10 ** 3
+    g_copy = g_vals.copy()
     
     # Generate distribution across all permutations.
-    discordance = pd.DataFrame(columns=range(perm_count))
-    grade_var = pd.DataFrame(index=grade.index)
+    distribution = []
     
-    for k in range(perm_count):
-        l = [rand.random() for i in range(len(grade))]
-        t = sum(grade['x'] == 'high') / len(grade)
-        perm_grade = []
+    for k in range(perm_count):        
+        for j in range(50):
+            swap1 = rand.choice(g_copy.index)
+            swap2 = rand.choice(g_copy.index)
+            
+            temp = g_copy[swap1]
+            g_copy[swap1] = g_copy[swap2]
+            g_copy[swap2] = temp
         
-        for i in l:
-            if i < t:
-                perm_grade.append('high')
-            else:
-                perm_grade.append('low')
-        
-        grade_var['x'] = perm_grade
-        sample = computeD(thresh, expr, grade_var, dist)
-        discordance.iloc[:, k] = sample
+        tau = kendall_corr(g_copy, dists)[0]
+        distribution.append(tau)
 
-    return discordance
+    return distribution
 
 
 # Main Driver
@@ -88,12 +67,16 @@ Parameters:
     - expr : DataFrame for the expression values over the genes in the data
     - grade : DataFrame for the grade values over the experiments in the data
     - thresh : Threshold value for the algorithm
-    - dist : Distance matrix of all geodesic distances between node pairs in G
+    - dist : Distance matrix of all geodesic distances between assayed node pairs in G
+    - gene_of_interest : Gene to run the computation on
 """
-def decayDE(expr, grade, thresh, dist):
-    trueval = computeD(thresh, expr, grade, dist)
-    distribution = computeDistD(thresh, expr, grade, dist)
-    pvals = distribution.subtract(trueval, 0).where(distribution < 0).count(1)
-    pvals /= distribution.shape[1]
+def decayDE(expr, grade, thresh, dist, gene_of_interest):
+    dist_filter = list(zip(*[(val, dist[val]) for val in dist.keys() if dist[val] < thresh]))
+    expr_radius = expr.loc[list(dist_filter[0])]
+    g_vals = computeG(expr_radius, grade)
     
-    return pvals
+    trueval = computeD(g_vals, dist_filter[1])
+    distribution = computeDistD(g_vals, dist_filter[1])
+    pval = sum([x < trueval for x in distribution]) / len(distribution)
+    
+    return pval
