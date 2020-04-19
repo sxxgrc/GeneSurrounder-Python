@@ -30,7 +30,7 @@ def computeG(expr, grade):
 Computes the decay of differential expression value for the graph.
 """
 def computeD(g_vals, dists):
-    return kendall_corr(g_vals, dists)
+    return kendall_corr(g_vals, dists)[0]
 
 """
 Computes the distribution of DDE across the given dataset and network.
@@ -78,5 +78,5 @@ def decayDE(expr, grade, thresh, dist, gene_of_interest):
     trueval = computeD(g_vals, dist_filter[1])
     distribution = computeDistD(g_vals, dist_filter[1])
     pval = sum([x < trueval for x in distribution]) / len(distribution)
-    
+
     return pval
