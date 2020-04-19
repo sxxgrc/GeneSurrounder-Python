@@ -70,13 +70,15 @@ Parameters:
     - dist : Distance matrix of all geodesic distances between assayed node pairs in G
     - gene_of_interest : Gene to run the computation on
 """
-def decayDE(expr, grade, thresh, dist, gene_of_interest):
-    dist_filter = list(zip(*[(val, dist[val]) for val in dist.keys() if dist[val] < thresh]))
-    expr_radius = expr.loc[list(dist_filter[0])]
-    g_vals = computeG(expr_radius, grade)
-    
-    trueval = computeD(g_vals, dist_filter[1])
-    distribution = computeDistD(g_vals, dist_filter[1])
-    pval = sum([x < trueval for x in distribution]) / len(distribution)
+def decayDE(expr, grade, dist):
+    pvals = {}
+    for thresh in range(max(dist.values())):
+        dist_filter = list(zip(*[(val, dist[val]) for val in dist.keys() if dist[val] < thresh]))
+        expr_radius = expr.loc[list(dist_filter[0])]
+        g_vals = computeG(expr_radius, grade)
 
-    return pval
+        trueval = computeD(g_vals, dist_filter[1])
+        distribution = computeDistD(g_vals, dist_filter[1])
+        pvals[thresh] = sum([x < trueval for x in distribution]) / len(distribution)
+
+    return pvals
