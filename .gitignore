@@ -1,2 +1,3 @@
 .vscode/*
 obj/*.pkl
+data_conversion/files/*.csv
