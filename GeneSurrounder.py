@@ -81,8 +81,8 @@ else:
 
 # Keep only the experiments desired.
 if (len(args.items) > 0):
-    expr = [expr[i] for i in args.items]
-    grade = [grade[i] for i in args.items]
+    expr = [expr[i - 1] for i in args.items]
+    grade = [grade[i - 1] for i in args.items]
 
 # Get the putative genes from the intersection of those studied and those in network.
 overlap_genes = set(network.nodes()).intersection(expr[0].index)
@@ -127,19 +127,21 @@ p_decay = [0 for _ in range(len(expr))]
 for i in range(len(expr)):
     p_decay[i] = decayDE(expr[i], grade[i], distances, diameter)
 verboseprint("Finished computing Decay of Differential expression values!")
-verboseprint("Values: " + str(p_decay))
+print("p_DE Values: " + str(p_decay))
 
 p_SI = [0 for _ in range(len(expr))]
 
 for i in range(len(expr)):
-    p_SI[i] = sphereOfInf(distances, expr[i], diameter, overlap_genes, 200, args.gene)
+    p_SI[i] = sphereOfInf(distances, expr[i], diameter, overlap_genes, resample=1000, 
+                          gene_of_interest=args.gene)
 verboseprint("Finished computing Sphere of Influence values!")
-verboseprint("Values: " + str(p_SI))
+print("p_SI Values: " + str(p_SI))
 
 # Compute the final p values.
 print("Final p values:")
 for i in range(len(expr)):
     combined_vals = [combine_pvalues([p_decay[i][j], p_SI[i][j]])[1] for j in range(diameter)]
+    print("Combined p-vals: " + str(combined_vals))
 
     # Display output.
     item = i if args.items == None else args.items[i]
